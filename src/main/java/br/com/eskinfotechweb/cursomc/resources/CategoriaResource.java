@@ -3,6 +3,7 @@ package br.com.eskinfotechweb.cursomc.resources;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.eskinfotechweb.cursomc.domain.Categoria;
+import br.com.eskinfotechweb.cursomc.dto.CategoriaDTO;
 import br.com.eskinfotechweb.cursomc.services.CategoriaService;
 import javassist.tools.rmi.ObjectNotFoundException;
 
@@ -26,19 +28,6 @@ public class CategoriaResource {
 
 	@Autowired
 	private CategoriaService service;
-	
-	@GetMapping
-	public List<Categoria> listar() {
-		
-		Categoria cat1= new Categoria(1, "Informática");
-		Categoria cat2= new Categoria(2, "Escritório");
-		
-		List<Categoria> lista = new ArrayList<Categoria>();
-		lista.add(cat1);
-		lista.add(cat2);
-		
-		return lista;
-	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) throws ObjectNotFoundException {
@@ -66,6 +55,13 @@ public class CategoriaResource {
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@GetMapping
+	public ResponseEntity<List<CategoriaDTO>> findAll() {
+		List<Categoria> list = service.findAll();
+		List<CategoriaDTO> listDTO = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
+		return ResponseEntity.ok().body(listDTO);
 	}
 	
 }
