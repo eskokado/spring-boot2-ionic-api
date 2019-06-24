@@ -26,6 +26,7 @@ import br.com.eskinfotechweb.cursomc.domain.Cliente;
 import br.com.eskinfotechweb.cursomc.dto.ClienteDTO;
 import br.com.eskinfotechweb.cursomc.dto.ClienteNewDTO;
 import br.com.eskinfotechweb.cursomc.services.ClienteService;
+import io.swagger.annotations.ApiOperation;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 @RestController
@@ -35,17 +36,20 @@ public class ClienteResource {
 	@Autowired
 	private ClienteService service;
 	
-	@GetMapping("/{id}")
+	@ApiOperation(value="Busca por id")
 	public ResponseEntity<Cliente> find(@PathVariable Integer id) throws ObjectNotFoundException {
 		Cliente obj = service.find(id);
 		return ResponseEntity.ok(obj);
 	}
 
+	@ApiOperation(value="Busca por email")
 	@GetMapping("/email")
 	public ResponseEntity<Cliente> find(@RequestParam(value="value") String email) {
 		Cliente obj = service.findByEmail(email);
 		return ResponseEntity.ok().body(obj);
 	}	
+
+	@ApiOperation(value="Insere cliente")
 	@PostMapping
 	public ResponseEntity<Void> insert(@Valid @RequestBody ClienteNewDTO objDto) {
 		Cliente obj = service.fromDTO(objDto);
@@ -55,6 +59,7 @@ public class ClienteResource {
 		return ResponseEntity.created(uri).build();		
 	}
 	
+	@ApiOperation(value="Atualiza cliente")
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> update(@Valid @RequestBody ClienteDTO objDto, @PathVariable Integer id) {
 		Cliente obj = service.fromDTO(objDto);
@@ -64,6 +69,7 @@ public class ClienteResource {
 	}
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value="Remove cliente")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
@@ -71,6 +77,7 @@ public class ClienteResource {
 	}
 
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value="Retorna todos clientes com paginação")
 	@GetMapping
 	public ResponseEntity<List<ClienteDTO>> findAll() {
 		List<Cliente> list = service.findAll();

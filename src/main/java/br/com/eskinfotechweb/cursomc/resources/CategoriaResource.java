@@ -24,6 +24,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import br.com.eskinfotechweb.cursomc.domain.Categoria;
 import br.com.eskinfotechweb.cursomc.dto.CategoriaDTO;
 import br.com.eskinfotechweb.cursomc.services.CategoriaService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 @RestController
@@ -33,6 +36,7 @@ public class CategoriaResource {
 	@Autowired
 	private CategoriaService service;
 	
+	@ApiOperation(value="Busca por id")
 	@GetMapping("/{id}")
 	public ResponseEntity<Categoria> find(@PathVariable Integer id) throws ObjectNotFoundException {
 		Categoria obj = service.find(id);
@@ -40,6 +44,7 @@ public class CategoriaResource {
 	}
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value="Insere categoria")
 	@PostMapping
 	public ResponseEntity<Void> insert(@Valid @RequestBody CategoriaDTO objDto) {
 		Categoria obj = service.fromDTO(objDto);
@@ -51,6 +56,7 @@ public class CategoriaResource {
 	}
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value="Atualiza categoria")
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> update(@Valid @RequestBody CategoriaDTO objDto, @PathVariable Integer id) {
 		Categoria obj = service.fromDTO(objDto);
@@ -60,6 +66,12 @@ public class CategoriaResource {
 	}
 	
 	@PreAuthorize("hasAnyRole('ADMIN')")
+	@ApiOperation(value="Remove categoria")
+	@ApiResponses(value = {
+			@ApiResponse(code = 400, message = "Não é possível excluir uma categoria que possui produtos"),
+			@ApiResponse(code = 404, message = "Código inexistente") 
+		}
+	)
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Integer id) {
 		service.delete(id);
@@ -67,12 +79,14 @@ public class CategoriaResource {
 	}
 
 	@GetMapping
+	@ApiOperation(value="Retorna todas categorias")
 	public ResponseEntity<List<CategoriaDTO>> findAll() {
 		List<Categoria> list = service.findAll();
 		List<CategoriaDTO> listDTO = list.stream().map(obj -> new CategoriaDTO(obj)).collect(Collectors.toList());
 		return ResponseEntity.ok().body(listDTO);
 	}
 
+	@ApiOperation(value="Retorna todas categorias com paginação")
 	@GetMapping("/page")
 	public ResponseEntity<Page<CategoriaDTO>> findPage(
 			@RequestParam(value = "page", defaultValue = "0") Integer page, 

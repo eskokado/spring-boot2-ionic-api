@@ -15,6 +15,7 @@ import br.com.eskinfotechweb.cursomc.domain.Produto;
 import br.com.eskinfotechweb.cursomc.dto.ProdutoDTO;
 import br.com.eskinfotechweb.cursomc.resources.utils.URL;
 import br.com.eskinfotechweb.cursomc.services.ProdutoService;
+import io.swagger.annotations.ApiOperation;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 @RestController
@@ -24,12 +25,14 @@ public class ProdutoResource {
 	@Autowired
 	private ProdutoService service;
 	
+	@ApiOperation(value="Busca por id")
 	@GetMapping("/{id}")
 	public ResponseEntity<Produto> find(@PathVariable Integer id) throws ObjectNotFoundException {
 		Produto obj = service.find(id);
 		return ResponseEntity.ok(obj);
 	}
 	
+	@ApiOperation(value="Retorna todos produtos com paginação")
 	@GetMapping
 	public ResponseEntity<Page<ProdutoDTO>> findPage(
 			@RequestParam(value = "nome", defaultValue = "") String nome, 

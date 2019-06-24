@@ -19,6 +19,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import br.com.eskinfotechweb.cursomc.domain.Pedido;
 import br.com.eskinfotechweb.cursomc.services.PedidoService;
+import io.swagger.annotations.ApiOperation;
 import javassist.tools.rmi.ObjectNotFoundException;
 
 @RestController
@@ -28,12 +29,14 @@ public class PedidoResource {
 	@Autowired
 	private PedidoService service;
 
+	@ApiOperation(value="Busca por id")
 	@GetMapping("/{id}")
 	public ResponseEntity<Pedido> find(@PathVariable Integer id) throws ObjectNotFoundException {
 		Pedido obj = service.find(id);
 		return ResponseEntity.ok(obj);
 	}
 
+	@ApiOperation(value="Insere pedido")
 	@PostMapping
 	public ResponseEntity<Void> insert(@Valid @RequestBody Pedido obj) {
 		obj = service.insert(obj);
@@ -43,6 +46,7 @@ public class PedidoResource {
 
 
  	@RequestMapping(method=RequestMethod.GET)
+	@ApiOperation(value="Retorna todos pedidos com paginação")
 	public ResponseEntity<Page<Pedido>> findPage(
 			@RequestParam(value="page", defaultValue="0") Integer page, 
 			@RequestParam(value="linesPerPage", defaultValue="24") Integer linesPerPage, 
